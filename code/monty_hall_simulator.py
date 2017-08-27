@@ -56,12 +56,12 @@ def simulate(num_doors, switch, steps, winning_door, choice):
     if switch:
         if steps:
             print('Contestant switches from door {} '.format(choice+1), end='')
-        
+
         # There are two closed doors left.  The contestant will never
         # choose the same door, so we'll remove that door as a choice.
         available_doors = list(closed_doors) # Make a copy of the list.
         available_doors.remove(choice)
-        
+
         # Change choice to the only door available.
         choice = available_doors.pop()
 
@@ -94,7 +94,7 @@ def main():
 
     parser.add_argument(
         '--trials',
-        default=10000,
+        default=100,
         type=int,
         metavar='int',
         help='number of trials to perform'
@@ -113,42 +113,53 @@ def main():
 
     distributions = ["normal", "binomial", "exponential", "poisson", "laplace", "logistic", "uniform", "rayleigh"]
 
-    for d in distributions:  
-        print(d)
-
-        winning_door_choices = new_random.get_random(0, args.doors-1, samples=args.trials, distribution='laplace')
-        contestent_door_choices = new_random.get_random(0, args.doors-1, samples=args.trials, distribution='rayleigh')
+    with open('doors_1000_1.csv', 'a+') as f:
+        f.write('Distribution,Doors,Won % switch, Won % non-switch\n')
+        for args.doors in range(3, 1000):
+            for d in distributions:
+                #print(d)
         
-        # Carry out the trials
-        winning_non_switchers = 0
-        winning_switchers = 0
-
-        for i in range(args.trials):
-            # First, do a trial where the contestant never switches.
-            won = simulate(
-                    args.doors, 
-                    switch=False, 
-                    steps=args.steps, 
-                    winning_door=winning_door_choices[i], 
-                    choice=contestent_door_choices[i]
-                )
-            if won:
-                winning_non_switchers += 1
-            
-            # Next, try one where the contestant switches.
-            won = simulate(
-                    args.doors, 
-                    switch=True, 
-                    steps=args.steps, 
-                    winning_door=winning_door_choices[i], 
-                    choice=contestent_door_choices[i]
-                )
-            if won:
-                winning_switchers += 1
-    
-        print('Switching won {0:5} times out of {1} ({2}% of the time)'.format(winning_switchers, args.trials, (winning_switchers / args.trials * 100 )))
-        print('Not switching won {0:5} times out of {1} ({2}% of the time)'.format(winning_non_switchers, args.trials, (winning_non_switchers / args.trials * 100 )))
-        print()
+                winning_door_choices = new_random.get_random(0, args.doors-1, samples=args.trials, distribution='laplace')
+                contestent_door_choices = new_random.get_random(0, args.doors-1, samples=args.trials, distribution='rayleigh')
+        
+                # Carry out the trials
+                winning_non_switchers = 0
+                winning_switchers = 0
+        
+                for i in range(args.trials):
+                    # First, do a trial where the contestant never switches.
+                    won = simulate(
+                            args.doors,
+                            switch=False,
+                            steps=args.steps,
+                            winning_door=winning_door_choices[i],
+                            choice=contestent_door_choices[i]
+                        )
+                    if won:
+                        winning_non_switchers += 1
+        
+                    # Next, try one where the contestant switches.
+                    won = simulate(
+                            args.doors,
+                            switch=True,
+                            steps=args.steps,
+                            winning_door=winning_door_choices[i],
+                            choice=contestent_door_choices[i]
+                        )
+                    if won:
+                        winning_switchers += 1
+        
+                #print('Switching won {0:5} times out of {1} ({2}% of the time)'.format(winning_switchers, args.trials, (winning_switchers / args.trials * 100 )))
+                #print('Not switching won {0:5} times out of {1} ({2}% of the time)'.format(winning_non_switchers, args.trials, (winning_non_switchers / args.trials * 100 )))
+                
+                f.write('{},{},{},{}\n'.format(
+                                d,
+                                args.doors,
+                                (winning_switchers / args.trials * 100 ),
+                                (winning_non_switchers / args.trials * 100 )
+                                )
+                        )
+            print(args.doors)
 
 
 if __name__ == '__main__':
