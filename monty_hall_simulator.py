@@ -6,7 +6,6 @@ import argparse, random
 
 import plotting_distribution as new_random
 
-
 def simulate(num_doors, switch, steps, winning_door, choice):
     """
     (int, bool): bool
@@ -19,7 +18,7 @@ def simulate(num_doors, switch, steps, winning_door, choice):
     assert (num_doors >= 2), '# doors less than 2'
 
     # Doors are numbered from 0 up to num_doors-1 (inclusive).
-    
+
     # Randomly choose the door hiding the prize.
     #winning_door = random.randint(0, num_doors-1)
 
@@ -27,10 +26,10 @@ def simulate(num_doors, switch, steps, winning_door, choice):
 
     if steps:
         print('Prize is behind door {}'.format(winning_door+1))
-    
+
     # The contestant picks a random door, too.
     #choice = random.randint(0, num_doors-1)
-    
+
     assert (0 <= choice <= num_doors-1), 'Contestents choice of door invalid'
 
     if steps:
@@ -41,7 +40,7 @@ def simulate(num_doors, switch, steps, winning_door, choice):
     while len(closed_doors) > 2:
         # Randomly choose a door to open.
         door_to_remove = random.choice(closed_doors)
-        
+
         # The host will never open the winning door, or the door
         # chosen by the contestant.
         if door_to_remove == winning_door or door_to_remove == choice:
@@ -49,7 +48,7 @@ def simulate(num_doors, switch, steps, winning_door, choice):
 
         # Remove the door from the list of closed doors.
         closed_doors.remove(door_to_remove)
-        
+
         if steps:
             print('Host opens door {}'.format(door_to_remove+1))
 
@@ -57,14 +56,14 @@ def simulate(num_doors, switch, steps, winning_door, choice):
     if switch:
         if steps:
             print('Contestant switches from door {} '.format(choice+1), end='')
-    
-    # There are two closed doors left.  The contestant will never
-    # choose the same door, so we'll remove that door as a choice.
-    available_doors = list(closed_doors) # Make a copy of the list.
-    available_doors.remove(choice)
-    
-    # Change choice to the only door available.
-    choice = available_doors.pop()
+        
+        # There are two closed doors left.  The contestant will never
+        # choose the same door, so we'll remove that door as a choice.
+        available_doors = list(closed_doors) # Make a copy of the list.
+        available_doors.remove(choice)
+        
+        # Change choice to the only door available.
+        choice = available_doors.pop()
 
     if steps:
         print('to {}'.format(choice+1))
